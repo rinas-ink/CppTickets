@@ -230,7 +230,7 @@ std::vector<int>& Foo::getVector() {
 int first_of_a = Foo::getVector()[0];
 
 int main() {
-    std::cout << first_of_a << '\n';  // either 1, or UB, as it's out-of-bounds
+    std::cout << first_of_a << '\n';  // now OK!
 }
 ```
 #### Сравнение с автоматическим временем жизни и динамическим
@@ -240,3 +240,7 @@ int main() {
 ### Замечания
 * Циклическое SIOF починить не получится никак, так как оно циклическое...
 * Такие же приколы могут быть с уничтожением объектов: может удалится объект, нужный другому в деструкторе
+
+### Полезные ссылки
+* https://isocpp.org/wiki/faq/ctors#static-init-order
+* https://en.cppreference.com/w/cpp/language/initialization#Non-local_variables
