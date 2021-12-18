@@ -157,37 +157,42 @@ struct my_vector {
 
 #### Explicit можно использовать для конструкторов с несколькими параметрами или без параметров
 
-тогда он запретит копирующую инициализацию.
-
-```C++
-struct Foo { Foo(int, int); };
-struct Bar { explicit Bar(int, int); };
-
-Foo f1(1, 1); // ok
-Foo f2 {1, 1}; // ok
-Foo f3 = {1, 1}; // ok
-
-Bar b1(1, 1); // ok
-Bar b2 {1, 1}; // ok
-Bar b3 = {1, 1}; // NOT OK
-```
+Например, хотим запретить неявно создавать объект при помощи `{}`.  
+Это полезно, потому что зачастую `Object{a, b, c}` интуитивно понятнее и логичнее, чем `{a, b, c}` 
 
 ```C++
 struct Foo {
     explicit Foo() {}
+
+    explicit Foo(int, std::string) {}
 };
 
-Foo bar() {
-    // return {}; // NOT OK
-    return Foo{}; // OK
+void call(const Foo &) {
 }
 
-void baz(Foo){}
+Foo ret() {
+    return Foo{}; // OK
+    // return {}; // BAD
+
+    return Foo{10, "hello"}; // OK
+    // return {10, "hello"}; // BAD
+}
 
 int main() {
-    Foo f1{}; // OK
-    Foo f2 = {}; // NOT OK
-    baz({}); // NOT OK
+    [[maybe_unused]] Foo f1{10, "hello"}; // OK
+    // [[maybe_unused]] Foo f2 = {10, "hello"}; // BAD
+
+    [[maybe_unused]] Foo f3{}; // OK
+
+    [[maybe_unused]] Foo f4 = Foo{}; // OK
+//    [[maybe_unused]] Foo f4 = {}; // BAD
+
+    call(Foo{10, "hello"}); // OK
+    // call({10, "hello"}); // BAD
+
+    call(Foo{}); // OK
+    // call({}); // BAD
+    ret();
 }
 ```
 
