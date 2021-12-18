@@ -136,6 +136,8 @@ int main() {
               
 ```c++
 
+#include <vector>
+#include "iostream"
 struct Foo {
     std::vector<int> vec{0, 0, 0};
 };
@@ -145,10 +147,9 @@ int main() {
     int bar;
     std::cout << ptr->vec.size() << std::endl; // 3
     delete ptr; // To avoid memory leak
-    //delete ptr; // Double free - UB; 
+    //delete ptr; // Double free - UB;
     //delete &bar; // UB;
 }
-
 ```
 
 Неосвобождённая память живёт до окончания программы - дальше современные ОС её освобождают. Такая ситуация называется утечкой памяти, 
