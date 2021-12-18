@@ -118,7 +118,7 @@ for (auto a : vec) std::cout << a; // prints 10 zeroes, type(a) - int
 * `const char *str_ptr` - каноническая сишная строка, указатель на произвольный кусок в памяти, в
   котором сначала идут символы, а в конце ноль.
 
-* `const char str[] = 'hello'` - старый сишный массив, который можно трактовать как строку, если в
+* `const char str[] = "hello"` - старый сишный массив, который можно трактовать как строку, если в
   нем идут символы-символы-символы, а потом ноль.
 
 * `const char *str_ptr = str` - array-to-pointer decay, массив-сишная строка распадается на
@@ -152,7 +152,8 @@ for (auto a : vec) std::cout << a; // prints 10 zeroes, type(a) - int
       char buf[size];
       gets(buf); // potentially unsafe: UB if try to read more that sizeof(buf)
       fgets(buf, sizeof(buf) /* size */, stdin); // ok, knows exactly how long buf is
-      ```# Классы
+      ```
+# Классы
 
 **Определение класса, конструктор, методы**
 
