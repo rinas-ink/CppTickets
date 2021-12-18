@@ -38,11 +38,16 @@ std::cout << p.dist2() << "\n";
 
 Синтаксис вызова через `->`:
 
+[Данный момент в лекции (UNKNOWN)]()
+[Соответствующий файл (UNKNOWN)]()
+
 ```c++
-TODO
+...
+Point p2 = &p;
+std::cout << p2->dist2() << "\n";
 ```
 
-По сути это ==TODO==
+По сути `p2->dist2()` это просто обёртка над `(*p2).dist2()`
 
 * ## Ключевое слово `this`
 
@@ -73,23 +78,23 @@ TODO
   
   Пусть у нас есть функция, которая принимает объект по константной ссылке (чтобы не менять и не копировать объект):
   
-  ```c++
+```c++
   void print(const Point &p) {
       std::cout << p.x << " " << p.y << "\n";
       std::cout << p.dist2() << "\n";
   }
-  ```
+```
   
   Если `dist2` реализован так, как мы его описывали ранее:
   
-  ```c++
+```c++
   struct Point {
       ... 
       int dist2() {
           return x * x + y * y;
       }
   }
-  ```
+```
   
   То данный код не скомпилируется с ошибкой вида `error: passing 'const Point' as 'this' argument discards qualifiers`
   
@@ -103,7 +108,7 @@ TODO
   
   В таком случае мы сами должны указать компилятору, что метод не меняет объект - добавить `const` qualifier:
   
-  ```c++
+```c++
 int dist2() const {
     return x * x + y * y;
 }
@@ -121,7 +126,7 @@ int dist2() const {
   
   Но мы знаем про приведение типов и C-style cast.
   
-  ```c++
+```c++
 void print(const Point &p) {
     std::cout << p.x << " " << p.y << "\n";
 
@@ -134,7 +139,7 @@ void print(const Point &p) {
   
   А вот если, например, сделать так (объявить точку `p` константной):
   
-  ```c++
+```c++
 int main() {
 ...
     const Point const_p{30, 40};
