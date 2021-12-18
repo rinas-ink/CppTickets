@@ -1351,7 +1351,7 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
           int end;
           std::cout << (&end - data) << "\n";  // UB
           std::cout << (data < &end) << "\n";  // unspecified, может быть неконсистентным!
-          std::cout << (data < &end) << "\n";  // unspecified, может быть неконсистентным!
+          std::cout << (data > &end) << "\n";  // unspecified, может быть неконсистентным!
           assert(data != &end);  // ok
       }
       {
@@ -1386,7 +1386,7 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
       char str[] = "hello";                              // сишная строка
       // char str[] = {'h', 'e', 'l', 'l', 'o', 0};      // то же самое
       
-      char str_ptr = *str;                               // array-to-pointer decay
+      char *str_ptr = str;                               // array-to-pointer decay
     }
     ```
   * ### Сравнение и получение длины
@@ -1458,7 +1458,7 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
     ```c++
     #include <cstring>
     #include <iostream>
-    #inlude "прошлый_пример.h"
+    #include "прошлый_пример.h"
       
     int main() {
       char* x = "xyz";
@@ -1512,6 +1512,8 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
       std::cout << s_ptr << " (2)\n";      // UB: строчка, владеющая той памятью уже не существует
     }
     ```
+ 
+
 </details>
 
 <details>
