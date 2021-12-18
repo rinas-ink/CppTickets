@@ -156,6 +156,552 @@ a = b = 5; // b = 5; a = b;
 
 <details>
 <summary>
+</summary>
+
+
+* ### Объявление и определение: функции, класса
+
+Компилятор - штука старая, совместимая с Си, поэтому компиляция идет по файлу сверху вниз. (в общем это правда, НО в
+структурках сделали, как у нормальных людей, тк тут на надо было в обратную совместимость)
+
+**Declaration**(forward) - объявление для того, чтобы показать компилятору, что существует такая функция/класс, чтобы
+можно было использовать раньше, чем мы написали реализацию.
+
+**Definition** - определение, прописываем реализацию
+
+В этом примере можно просто поменять порядок и не нужно будет объявлять
+
+```c++
+    void foo(); // declaration
+    // еслли без этого, мы хз че такое foo в print() ниже
+    
+    struct Iam{ // definition
+        void print(){
+            cout << "I am";
+            foo();
+        }
+    };
+    
+    void foo() { // definition
+        cout << "tired";
+    }
+```
+
+* ### Взаимная рекурсия для: функций, классов, методов внутри одного класса, методов между классами (A::foo() возвращает B и наоборот).
+
+    * Функции
+
+      Могут быть кеки, вида одна фукнция запускает дургую и наоборот, тогда без forward declaration мы не скомпилимся.
+
+        ```c++
+        void bar(int n);  // declaration, объявление
+        // void bar(int = 10);  // declaration, объявление
+        // Default arguments are better be specified in declaration.
+        
+        void foo(int n) {  // definition, определение
+            std::cout << "foo " << n << "\n";
+            bar(n - 1);
+        }
+        
+        void bar(int n) {  // definition, определение
+            std::cout << "bar " << n << "\n";
+            if (n == 0) {
+                return;
+            }
+            foo(n - 1);
+        }
+        
+        int main() {
+            bar(10);
+        }
+        ```
+    * Методы внутри класса
+
+      Как я писал выше, в структурках сделали как у белых людей, те мы видим все, что лежит у нас в структуре:
+        ```c++
+        struct Foo{
+            void foo() {
+                cout << 1;
+                bar();
+            }
+            void bar() {
+                cout << 2;
+            }
+            struct Bar{};
+        };
+        
+        int main(){
+            Foo::Bar b; // 
+        }
+        ```
+    * Классы
+
+      Ну кста методы можно просто объявить в структурке, а объявлять в наруже(через Foo::)
+
+      Можем хранить только указатели, ветора... кароче штуки, котрым пофиг на размер того, что ты им подсунул(вектора
+      там чет себе на куче делает, указатель - и в Африке указатель)
+        ```c++
+        struct Bar;
+
+        struct Foo {
+            // Bar b - так нельзя, тк мы не знаем сколько байтов занимает Bar, да и вообще бесконечная глубина
+            Bar *b;
+            std::vector<Bar> bs;
+        };
+        
+        struct Bar {
+            Foo f;
+        };
+        ```
+
+      А теперь бахнем взаимную рекурсию:
+
+      Было(не работает шо пипец):
+        ```c++
+            struct Foo {
+                operator Bar() {
+                    return Bar{};
+                }
+            };
+
+            struct Bar {
+                Bar() {}
+                Bar(Foo /*arg*/) {}
+            };
+            
+            int main() {
+                Foo f;
+                Bar b = f;  // ambiguous
+            }
+        ```
+      Сначала мы не знаем, что Bar() - тип, для этого fwd declaration.  
+      Получилось, что Bar - incomplete, мы не знаем что за мусор в Bar, когда пытаемся сделать оператор преобразования к
+      Bar. Ну тогда просто реализуем этот метод после того, как узнаем про Bar(в Питере - пить!). Получили, что и
+      хотели, что преобразование типов(в мэйне) неоднозначно(надо еще explicit куда-нибдь бахнуть и норм)         
+      Стало:
+
+        ```c++
+            
+            struct Bar;  // incomplete type
+
+            struct Foo {
+                operator Bar();
+            };
+
+            struct Bar {
+                Bar() {}
+                Bar(Foo /*arg*/) {}
+            };
+            
+            Foo::operator Bar() {
+                return Bar{};
+            }
+            
+            int main() {
+            Foo f;
+            Bar b = f;  // ambiguous
+            }
+        ```
+* ## Incomplete type: как объявить, что можно сделать с неполным типом.
+
+Incomplete - это тип, который описывает идентификатор, но не содержит информацию, необходимую для определения размера
+идентификатора. Типо мы не знаем его размер, тк пока только объявили, но можем указатели тыкнуть или в векторочек
+положить, ссылками на него побаловаться итп
+смотри [сюда](https://github.com/hse-spb-2021-cpp/lectures/tree/master/06-211006/09-incomplete). Мы можем просто
+объявить не полный тип, пожонглировать его ссылками, не заглядывая под капот чего там происходит.
+
+* ## Namespaces
+
+Если есть две одинковые по назавнию и параметрам функции, переменные итп, которые делают что-то разное, то мы можем из
+обернуть в пространства имен, чтобы уметь обращаться к нужной.
+
+```c++
+void foo(){
+    cout << "global foo";
+};
+void  some_glob(){
+    cout << "global kek";
+};
+namespace ns1{
+void bar(){
+    cout << "В Питере - пить!";
+}
+void foo(){
+    cout << "foo1";
+    bar();
+    some_glob();
+};
+
+}
+namespace ns2{
+void foo(){
+    cout << "foo2";
+};
+}
+int main() {
+    ns1::foo();
+    ns2::foo();
+    ::foo() // то же самое, что foo() - в глабольном namespace
+}
+```
+Кста в нэймспейсах важен порядок в котором мы объявляем функции(те не как в классах), идем сверзу вниз.
+
+Можем сделать их вложенными(читаем комментики):
+
+```c++
+void foo() {
+    std::cout << "foo global\n";
+}
+
+void some_global() {
+    std::cout << "some_global\n";
+}
+
+namespace ns1 {
+void bar() {
+    std::cout << "ns1::bar()\n";
+}
+
+namespace ns2 {
+void bar() {
+    std::cout << "ns1::ns2::bar\n";
+}
+}  // namespace ns2
+
+namespace ns3 {
+void botva_ns3() {
+    std::cout << "botva_ns3()\n";
+}
+}  // namespace ns3
+
+namespace ns3::ns4 { // просто сделали короче, чтобы не писать ns3 внутри котрого писать ns4
+namespace ns1 {  // ns1::ns3::ns4::ns1 
+    // !!!ДА, просто такое же имя, но другой namespace
+}
+
+void baz() {
+    botva_ns3();  // unqualified name lookup for 'botva_ns3'
+    ns2::bar();  // unqualified name lookup for 'ns2', qualified name lookup bar()
+    // ns2::foo();  // compilation error: no 'foo' inside 'ns2'
+    // ns1::ns2::bar();  // thinks that 'ns1' is 'ns1::ns3::ns4::ns1', 'n2' not found
+    ::ns1::ns2::bar(); // qualified 
+}
+}  // namespace ns3::ns4
+}  // namespace ns1
+
+int main() {
+ns1::ns3::ns4::baz();
+}
+```
+
+Кста qualified - это найти при помощи unqualified нужное место, а потом просто посмотреть внутрь.
+
+Unqualified - он поднимается по уровнням наверх, когда найдет - остановится.(а лол это 13 билет, но тут без этого - никуда)
+
+Мем: если namespce на одном уровне вложенности и называются одинаково, то это один namespace(ns3), если на разных, но название совпало, то это разные(s1 и s1::s3::s4::s1) 
+
+Читаем комменты, кто проникся? 
+
+По факту надо что запомнить: если без двоеточия в начале, то мы поднимаемся наверх, пока не найдем че хотели(интересует первый раз когда найдем первый наймспейс в пути(самую левую в объявлении)) потом - тупо идем вниз по остатку пути
+
+Если есть двоеточие, то идем на самый верх(глобальную мусорку) и спускаемся с нее по пути
+* ### Псевдонимы типов typedef, using
+
+Кароче просто хотим по-своему типы называть, есть 2 способа(дефайн для лохов), который чисто синтаксически различаются(
+typedef неудобный, но обратная совместимость). После компиляции - не отличить псведоним от исходного
+
+Егор на вопрос в чем разница: "Но вроде есть какой-то баг в
+GCC: https://stackoverflow.com/questions/48613758/using-vs-typedef-is-there-a-subtle-lesser-known-difference"
+
+```c++
+#include <vector>
+#include <utility>
+#include <typeinfo>
+#include <iostream>
+
+typedef std::vector<int> vi;
+using pii = std::pair<int, int>;
+// Please do not #define: it does not respect namespaces/private/public
+// https://stackoverflow.com/a/1666375/767632
+
+int main() {
+    vi v1(10);
+    std::vector<int> &v2 = v1;
+    std::cout << typeid(v1).name() << "\n";
+    std::cout << typeid(v2).name() << "\n";
+
+    pii p1(10, 20);
+    std::pair<int, int> &p2 = p1;
+}
+```
+
+* ### Че по using namespace
+
+Обычно пишется внутри какого-то отдельного кусочка программы (то есть не глобально), потому что иначе можем произойти
+коллизия имен. Прикольны пример [04-210923/01-functions/02-lcm](https://github.com/hse-spb-2021-cpp/lectures/blob/master/04-210923/01-functions/02-lcm.cpp). Там мы делаем лонговый лцм, но вызываем от интов,
+вызовется стандтартная функция(спс namespace std), мы там переполняемся и дохнем.
+
+</details>
+
+<details>
+<summary>
+</summary>
+
+Скраденно подчистую
+* ###Объявление нескольких переменных, указателей, ссылок, в том числе константных.
+Скомунизжено у нынешнего 2го курса
+```c++
+int a = 10, b = 11;
+int lol = 5, kek = lol; 
+const int c = 12;
+int &x = a;
+const int &y = b; //нельзя менять значение по ссылке
+int *z = &a;
+const int *w = &a; //нельзя менять значение по указателю
+int * const q = &a; //нельзя перекинуть указатель на другой объект
+const int * const e = &c; //нельзя два пункта выше
+int * const r = &c;
+//не компилируется, так как нет запрета на изменение значения
+int &g = c;
+//не компилируется, так как нет запрета на изменение значения
+```
+* ###Создание временного объекта.
+Хз че тут рассказать, вот [статья](https://docs.microsoft.com/en-us/cpp/cpp/temporary-objects?view=msvc-160)
+Ну а по факту - мы когда что-то вычисляем(a + b + c) или возвращаем из фукнций по значению, создаются временные объекты, куда эта радасть складывается, чтобы доделать вычисления и сдохнуть, как оно больше не нужно.
+
+* ###Инициализация
+[тут вроде нормас(нужно читать до The most vexing parse, он в некст билете)](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/ticket32.md#%D0%B1%D0%B8%D0%BB%D0%B5%D1%82-32-%D0%B2%D0%B8%D0%B4%D1%8B-%D0%B8%D0%BD%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8)
+* ###Неинициализированные переменные/поля.
+Кароче стандарт не гарантирует, что если вы не проинициализировали свои буковки, то там не будет мусора, полезете туда - UB. Хотя в случае глобального простравнста имен это кажется правда, что там стандартное значение
+* ###Инициализация при помощи {}:
+    * Для тривиальных типов. (заполняет стандартным занчением)
+    * Для нетривиальных типов. (вызывает соответствующий конструктор)
+    * Для массивов/векторов, в том числе вложенных. 
+    * Временных объектов: с указанием типа (T{}, T()) и без указания типа ({}).
+ 
+Опять воруем:
+```c++
+struct foo() {
+int x, y, z;
+}
+int a{}; // a = 0(дефолтное значение инта)
+int a{12}; //a == 12
+vector<int> b = {3, 2}; //b[0] = 3, b[1] = 2
+vector<int> b{3, 2}; //b[0] = 3, b[1] = 2
+vector<vector<int>> mas{{1, 2}, {3, 4}};
+vector<vector<int>> mas = {{1, 2}, {3, 4}};
+foo f{1, 2} //f.x = 1, f.y = 2, f.z непроинициализированно
+foo g{1, 2, 3}; //g.x = 1, g.y = 2, g.z = 3
+vector<pair<int, int>> c;
+c.push_back({2, 3});
+//создали временный объект, компилятор сам понял, какой тип
+c.push_back(std::pair<int, int>(2, 4));
+c.push_back(std::pair<int, int>{2, 4});
+```
+* ###Пример, где инициализация через {} и () компилируются и ведут себя по-разному.
+```c++
+vector<int> a(3, 2); - вектор из трех двоек
+vector<int> a{3, 2}; - вектор из тройки и двойки.
+```
+* ###Ссылки.
+  * Можно ли отличить ссылку от объекта, на который она указывает.
+    
+    Ссылки обычно ведут себя идентично значениям, на которые они ссылаются. В этом смысле ссылка работает как псевдоним объекта, на который она ссылается. Еще можно воспользоваться `std::is_reference(T)` ([ссылка](https://en.cppreference.com/w/cpp/types/is_reference))
+  * Использование константных ссылок.
+    
+    Они же ссылки на константные значения
+    ```c++
+        const int value = 7;
+        const int &ref = value; // ref - это ссылка на константную переменную value
+    ``` 
+    
+  * Константная ссылка не обещает, что объект не меняется (если ссылка на мутабельный объект).
+
+    Как и в случае с указателями, константные ссылки также могут ссылаться и на неконстантные переменные. При доступе к значению через константную ссылку, это значение автоматически считается const, даже если исходная переменная таковой не является:
+    ```c++
+    int value = 7;
+    const int &ref = value; // создаем константную ссылку на переменную value
+
+    value = 8; // ок: value - это не константа
+    ref = 9; // нельзя: ref - это константа
+    ```
+* ###auto и его модификации, как выводится тип(Вывод приватного типа или типа лямбды)
+Авто откидывает всю константость и ссылки(если это хотим надо явно прописать).
+Есть исключения.
+```c++
+int val = 10;
+int &foo() {
+    return val;
+}
+const int &bar() {
+    return val;
+}
+
+int main() {
+    {
+        [[maybe_unused]] auto x = foo();  // int
+        [[maybe_unused]] auto &y = foo();  // int&
+        [[maybe_unused]] const auto &z = foo();  // const int&
+    }
+    {
+        [[maybe_unused]] auto x = bar();  // int
+        [[maybe_unused]] auto &y = bar();  // const int&
+        [[maybe_unused]] const auto &z = bar();  // const int&
+    }
+}
+```
+Про тип лямбды:
+
+У лямбды просто так нельзя выписать тип, так как лямбда -- синтаксический сахар над функторами, поэтому каждая лямбда имеет свой тип.
+
+Поэтому можно либо пользоваться `std::function`, либо `decltype` (который, кстати, работает во время компиляции): 
+```c++
+int main() {
+    auto l1 = [](int a, int b) { return a > b; };
+    auto l2 = [](int a, int b) { return a > b; };
+    std::set<int, decltype(l1)> s1(l1);
+    // std::set<int, decltype(l1)> s2(l2); - сдохнет, тк типы разные, хоть лямбды и одинаковы
+}
+```
+
+</details>
+
+<details>
+<summary>
+</summary>
+
+- ###[[maybe_unused]] 
+используется для уведомления компилятора о том, что
+сущность может быть не использована в программе и следует подавлять
+соответствующее предупреждение.
+- ###The most vexing parse
+    Текста внутри оч мало, не боимся.
+    - [сэнкс что уже есть](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/ticket32.md#the-most-vexing-parse)
+    - [примеры с наших лекций, нужен 2 файл](https://github.com/hse-spb-2021-cpp/lectures/tree/master/05-210930/02-declare-define)
+    - [про структурки, с лекции](https://github.com/hse-spb-2021-cpp/lectures/tree/master/06-211006/00-past)
+- ###Допустимые имена переменных, функций, констант, классов:
+    - Нельзя начинать с цифры.
+    - Ключевые слова - бан([список](https://en.cppreference.com/w/cpp/keyword))
+    - C `_` кеки(UB)([все ошибки](https://stackoverflow.com/questions/228783/what-are-the-rules-about-using-an-underscore-in-a-c-identifier)):
+        * Нельзя с него начинать глобальные имена
+        * Двойное => бан(только компилятор так может)
+        * Начинаем с `_`, а потом заглавная буква.
+        * `_t` - не UB(по стандарту), но POSIX(бубнта и макосось) по кеку зарезервировал некоторые имена, можно огрести
+    - Последствия - повезло/UB самые разные кеки[(пример с кфа про _end)](https://codeforces.com/blog/entry/17747)
+- ###Structured binding для пар, простых структур, массивов, со ссылкой
+    [ссыль на пример лекции](https://github.com/hse-spb-2021-cpp/lectures/blob/master/03-210916/01-extra-stl/02-structured-binding.cpp)
+    ```c++
+    auto [a, b, c] = std::tuple(32, "hello"s, 13.9);
+    auto [a, b] = foo();//foo() возвращает пару
+    ///пара со ссылкой
+    std::pair<int,int> f;
+    auto &[a, b] = f; //тогда a/b привяжутся к её first/second
+    /////простые структуры
+    struct Point {int x, y;};
+    Point p = { 1,2 };
+    auto[ x, y] = p;
+    //фиксированные массивы
+    int arr[3] = { 1, 2, 3 };
+    auto[x, y, z] = arr;
+    ```
+    - minmax trouble
+    
+    Функция возвращает пару, но паруу ссылок на значения, а биндинг просто копирует, ну молодец, огребай
+    ```c++
+    {
+        std::pair<int, int> p = std::minmax(30, 20);
+        std::cout << p.first << " " << p.second << "\n";  // Ok!
+    }
+    {
+        auto [x, y] = std::minmax(30, 20);
+        std::cout << x << " " << y << "\n";  // UB
+    }
+    ```
+- ###Поиск имён
+    - Квалифицированный и неквалифицированный поиск, порядок обхода вложенных namespace
+        
+        [вай +10 минут сна мне](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#%D0%B1%D0%B8%D0%BB%D0%B5%D1%82-03-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0-%D0%BF%D0%BE%D0%B8%D1%81%D0%BA%D0%B0-%D0%B8%D0%BC%D1%91%D0%BD-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85-%D0%B8-%D0%B2%D0%BD%D1%83%D1%82%D1%80%D0%B8-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%BE%D0%B2)
+    - Отличие между std:: и ::std::
+      Если вы пишете нормальный код и его не будут исопльзовать через левое ухо, то это одно и тоже. 
+      
+      НО если кто-то сделает стурктуру/namespace с именем std(он обязательно в каком-то namespace, тк в std нельзя ничего вставлять, это UB)
+      То может произойти примерно вот такой кек: 
+      ```c++
+        #include <iostream>
+        int main() {
+          struct std{};
+          std::cout << "fail\n"; // Error: unqualified lookup for 'std' finds the struct
+          ::std::cout << "ok\n"; // OK: ::std finds the namespace std
+        }
+
+      ```
+    - ADL (argument-dependent lookup) для операторов и функций
+      Видимо мы еще не прошли таааак глубоко [Версия от Влада](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#%D0%B1%D0%B8%D0%BB%D0%B5%D1%82-04-adl) - Там чет сильно больше, чем у нас было(вроде), 
+      
+    попробую нашу версию:
+      
+      ```c++
+      // Argument-Dependent Lookup aka Koenig Lookup
+
+        namespace ns {
+        struct Foo {};
+        
+        void do_something() {}
+        void do_something(Foo) {}
+        bool operator==(const Foo&, const Foo&) { return true; } // то ради чего все
+        };
+        
+      int main() {
+        // do_something(); - а шо ты хочешь когда так пишешь?
+        ns::do_something(); // ну так можно
+    
+        // Foo f;
+        ns::Foo f; // Так заработает тк теперь мы будем смотреть на все наймспейсы где лежат аргументы
+        do_something(f);  // unqualified name lookup, ADL enabled
+       
+        // вот он, настоящий пельмень:
+        // f == f;
+        // operator==(f, f)
+        // ns::operator==(f, f);
+    
+        // Example:
+        // getline(std::cin, str)
+        // Better: std::getline
+        //
+        // std::vector<int> v{1, 2, 3};
+        // sort(v.begin(), v.end());  // v.begin() ~ std::vector<int>::iterator ~(?) int*
+        // Better: std::sort
+      }
+    
+      ```
+    - Hidden friend
+      
+      friend-function's внутри пространства имен, которые объявлены в связанном классе видны для ADL, даже если не видны для других поисков.
+      
+      [Влад гений](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#hidden-friend-%D0%BF%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5-%D0%BF%D0%BE%D1%81%D0%BE%D0%B1%D0%B8%D0%B5-%D0%BF%D0%BE-%D0%BF%D0%BE%D0%B8%D1%81%D0%BA%D1%83-%D0%B4%D1%80%D1%83%D0%B7%D0%B5%D0%B9)
+      
+      [Еще в 23 билете про это классно написали, ну и просто инфа про друзей итп есть](https://github.com/khbminus/CppTickets/blob/master/tickets/ticket23.md#%D0%B4%D1%80%D1%83%D0%B7%D1%8C%D1%8F-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8)
+- ###Shadowing переменных в рамках одной функции
+
+(скоммуниздил с [хабра](https://habr.com/ru/company/vk/blog/341584/), use ctrl+f)
+  
+Скрытие переменной (Variable shadowing) происходит, когда переменная, объявленная в одной области видимости (например, блоке или функции), имеет такое же имя, как и другая переменная, определённая во внешней области видимости. Тогда внешняя переменная будет скрыта внутренней
+```c++
+bool x = true;                                              // x is a bool
+auto f(float x = 5.f) {                                     // x is a float
+    for (int x = 0; x < 1; ++x) {                           // x is an int
+        [x = std::string{"Boo!"}](){                        // x is a std::string
+            { auto [x,_] = std::make_pair(42ul, nullptr);}  // x is now unsigned long
+        }();
+    }
+}
+```  
+
+        
+</details>
+
+<details>
+<summary>
  4. Функции
 </summary>
 
