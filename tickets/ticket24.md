@@ -103,6 +103,38 @@ struct my_vector {
 ```
 
 `static_cast<T>` — явное преобразование к типу T.
+#### Explicit можно использовать для конструкторов с несколькими параметрами или без параметров
+тогда он запретит копирующую инициализацию.
+```C++
+struct Foo { Foo(int, int); };
+struct Bar { explicit Bar(int, int); };
+
+Foo f1(1, 1); // ok
+Foo f2 {1, 1}; // ok
+Foo f3 = {1, 1}; // ok
+
+Bar b1(1, 1); // ok
+Bar b2 {1, 1}; // ok
+Bar b3 = {1, 1}; // NOT OK
+```
+```C++
+struct Foo {
+    explicit Foo() {}
+};
+
+Foo bar() {
+    // return {}; // NOT OK
+    return Foo{}; // OK
+}
+
+void baz(Foo){}
+
+int main() {
+    Foo f1{}; // OK
+    Foo f2 = {}; // NOT OK
+    baz({}); // NOT OK
+}
+```
 
 #### Можно ли запретить только некоторые неявные преобразования?
 
