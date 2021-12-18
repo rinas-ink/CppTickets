@@ -2106,6 +2106,7 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
 
 <details>
 <summary>
+ Билет 18. `unique_ptr`, управление памятью, move
 </summary>
 
 * ## Ручное управление памятью: `new`, `delete`, `new[]`, `delete[]`, когда что использовать.
