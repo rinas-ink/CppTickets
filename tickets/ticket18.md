@@ -70,7 +70,7 @@ int main() {
 std::unique_ptr<Foo> f;
 assert(f == nullptr);
 ```
-Можно собственно записать указатель, с помощью `make_unique`. Под капотом это обычный `new`, только возвращающий сразу `unique_ptr`  
+Можно собственно записать указатель, с помощью `make_unique`. Под капотом это обычный `new`, только возвращающий сразу `unique_ptr`. `make_unique` передаёт аргументы в конструктор.
 ```C++
 std::unique_ptr<Foo> f = std::make_unique<Foo>();
 ```
