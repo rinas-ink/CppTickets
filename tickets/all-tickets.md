@@ -15,6 +15,7 @@ int main() {
 
 LMAO
 Not bottom text, lol
+
 </details>
 
 <details>
@@ -149,6 +150,7 @@ int a,b;
 a = b = 5; // b = 5; a = b;
 ```
 если бы порядок был другой, получили бы UB
+
 
 </details>
 
@@ -352,6 +354,7 @@ a = b = 5; // b = 5; a = b;
   * ### Не было: конверсии между указателями, что происходит с перегрузками.
 
 Тесно связано с: методы.
+
 </details>
 
 <details>
@@ -575,6 +578,7 @@ int main() {
 }
 ```
 [ну или проблемы range-based for связанная с тем, что его рассахаривание - несколько выражений](https://github.com/Nekrolm/ubbook/blob/master/lifetime/for_loop.md) 
+
 </details>
 
 <details>
@@ -769,6 +773,7 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
 
 <!-- remark -->
 **Замечание**: тесно связано с: функторы, лямбда-функции, базовый синтаксис (порядок вычислений).
+
 
 
 
@@ -1405,7 +1410,8 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
       }                                    // конец зоны видимости s (тут она умирает)
       std::cout << s_ptr << " (2)\n";      // UB: строчка, владеющая той памятью уже не существует
     }
-    ```</details>
+    ```
+</details>
 
 <details>
 <summary>
@@ -1695,6 +1701,7 @@ struct Example{
 ```
 
 
+
 </details>
 
 <details>
@@ -1878,7 +1885,8 @@ struct Rectangle {
 
 ### Неочевидные источники:
 * https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#%D0%B1%D0%B8%D0%BB%D0%B5%D1%82-01-%D0%B4%D0%B5%D1%82%D0%B0%D0%BB%D0%B8-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%BE%D0%B2
-* https://olympiads.ru/zaoch/2018-19/lang_docs/cppreference.com/reference/en/cpp/language/static.html</details>
+* https://olympiads.ru/zaoch/2018-19/lang_docs/cppreference.com/reference/en/cpp/language/static.html
+</details>
 
 <details>
 <summary>
@@ -2319,6 +2327,7 @@ int main() {
 }
 
 ```
+
 </details>
 
 <details>
@@ -2614,5 +2623,6 @@ Foo& getFoo() {
 ### Полезные ссылки
 * https://isocpp.org/wiki/faq/ctors#static-init-order
 * https://github.com/Nekrolm/ubbook/blob/master/runtime/static_initialization_order_fiasco.md
-* https://en.cppreference.com/w/cpp/language/initialization</details>
+* https://en.cppreference.com/w/cpp/language/initialization
+</details>
 
