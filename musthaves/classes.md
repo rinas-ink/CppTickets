@@ -47,6 +47,7 @@ struct Point {
 * Конструкторы не наследуются. Если хотим для `Derived` добавить конструктор, то в нём обязаны
   сконструировать базовый класс. Синтаксис: `Derived(params) : Base(base_params), other_members {}`
   . [Пример](https://github.com/hse-spb-2021-cpp/lectures/blob/master/09-211110/05-ctors.cpp)
+* Если ничего не конструировать в явном виде, в конструкторе `Derived` вызовется конструктор `Base` по-умолчанию.
 * Типы
   наследования: [Пример](https://github.com/hse-spb-2021-cpp/lectures/blob/master/10-211117/02-extra/20-inheritance-visibility.cpp)
     * `public`: по-умолчанию для структур, наследнику видны все поля и методы.
