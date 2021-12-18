@@ -3,10 +3,12 @@
 Преобразование одного типа в другой.  
 Бывают явные(explicit) и неявные(implicit).  
 Явные — программист чётко прописывает, что хочет преобразовать тип:
+
 ```C++
 double a = 123.4;
 int b = static_cast<int>(a); // кастуем a к int
 ```
+
 ```C++
 struct foo{ foo(int){} }
 void bar(foo){}
@@ -15,11 +17,14 @@ int main{
     bar(foo(k)); // создаём объект foo от k и передаём в функцию
 }
 ```
+
 Неявные — умняш компилятор сам догадывается, что во что нужно преобразовать.
+
 ```C++
 double a = 123.4;
 int b = a; // компилятор сам понял, что хотим привести double к int
 ```
+
 ```C++
 struct foo{ foo(int){} };
 void bar(foo){}
@@ -67,6 +72,26 @@ int main() {
     println(r); 
     println(10); // println(ratio(10));
     println(generate_ratio());
+}
+```
+
+В коде выше 3 раза происходит неявное преобразование.  
+Для `ratio r = 10;` компилятор выполнил то же самое, что выполнил бы для `ratio r = ratio(10);`, то есть произошло
+неявное преобразование int — 10 к ratio.  
+`println(10)` здесь — это `println(ratio(10))`.  
+Наконец
+
+```C++
+ratio generate_ratio() {
+    return 123;
+}
+```
+
+есть на самом деле
+
+```C++
+ratio generate_ratio() {
+    return ratio(123);
 }
 ```
 
@@ -129,8 +154,11 @@ struct my_vector {
 ```
 
 `static_cast<T>` — явное преобразование к типу T.
+
 #### Explicit можно использовать для конструкторов с несколькими параметрами или без параметров
+
 тогда он запретит копирующую инициализацию.
+
 ```C++
 struct Foo { Foo(int, int); };
 struct Bar { explicit Bar(int, int); };
@@ -143,6 +171,7 @@ Bar b1(1, 1); // ok
 Bar b2 {1, 1}; // ok
 Bar b3 = {1, 1}; // NOT OK
 ```
+
 ```C++
 struct Foo {
     explicit Foo() {}
