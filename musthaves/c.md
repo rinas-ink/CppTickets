@@ -20,19 +20,24 @@
       лежат в `std::string`, причём этот указатель живет только пока живет сам `std::string`.
     * `c_str -> std::string`: у `std::string` есть конструктор от сишной строки. Важно следить за
       памятью и учитывать, что если `c_str = nullptr`, то `std::string` от неё не будет пустой
-      строчкой (а бросит ошибку). [Source](https://stackoverflow.com/questions/4764897/converting-a-c-style-string-to-a-c-stdstring)
+      строчкой (а бросит ошибку)
+      . [Source](https://stackoverflow.com/questions/4764897/converting-a-c-style-string-to-a-c-stdstring)
 
 **Операции со строками в стиле Си**
 
-* Конкатенация: [Пример](https://github.com/hse-spb-2021-cpp/lectures/blob/master/08-211020/01-c-str/05-allocator.cpp)
-  * За `2n`: идём сначала по первой строчке, вписываем её, потом по второй строчке и вписываем её.
-  Предварительно нужно зарезервировать память в размере `first.size() + second.size() + 1`, +1 очень
-  важен, иначе UB, которое не всегда стреляет.
+*
+Конкатенация: [Пример](https://github.com/hse-spb-2021-cpp/lectures/blob/master/08-211020/01-c-str/05-allocator.cpp)
+    * За `2n`: идём сначала по первой строчке, вписываем её, потом по второй строчке и вписываем её.
+      Предварительно нужно зарезервировать память в размере `first.size() + second.size() + 1`, +1
+      очень важен, иначе UB, которое не всегда стреляет.
 
 * Длина строки:
     * Подсчёт ручками или с помощью `std::strlen()`, работает за линию в любом случае.
-* Альтернатива `gets`: (на лекции не нашёл, хз) [Source](https://ru.wikipedia.org/wiki/Gets#%D0%90%D0%BB%D1%8C%D1%82%D0%B5%D1%80%D0%BD%D0%B0%D1%82%D0%B8%D0%B2%D1%8B)
-  ```c++
-  char str[size];
-  fgets(str, sizeof(str), stdin);
-  ```
+* Альтернатива `gets`: (есть у Егора в файлах с консультации)
+    * Если есть функция, которая читает символы пока читается - это какая-то лажа, может быть
+      опасно. [Source](https://ru.wikipedia.org/wiki/Gets#%D0%90%D0%BB%D1%8C%D1%82%D0%B5%D1%80%D0%BD%D0%B0%D1%82%D0%B8%D0%B2%D1%8B)
+      ```c++
+      char buf[size];
+      gets(buf); // potentially unsafe: UB if try to read more that sizeof(buf)
+      fgets(buf, sizeof(buf) /* size */, stdin); // ok, knows exactly how long buf is
+      ```
