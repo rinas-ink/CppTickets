@@ -443,6 +443,7 @@ int main() {
 
 <details>
 <summary>
+ 17. Указатели
 </summary>
 
 
