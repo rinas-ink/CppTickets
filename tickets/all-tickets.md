@@ -744,7 +744,7 @@ auto f(float x = 5.f) {                                     // x is a float
 
 <details>
 <summary>
- Билет 4. Функции
+ Билет 14. Функции
 </summary>
 
 * ## Параметры
