@@ -465,7 +465,7 @@
           int end;
           std::cout << (&end - data) << "\n";  // UB
           std::cout << (data < &end) << "\n";  // unspecified, может быть неконсистентным!
-          std::cout << (data < &end) << "\n";  // unspecified, может быть неконсистентным!
+          std::cout << (data > &end) << "\n";  // unspecified, может быть неконсистентным!
           assert(data != &end);  // ok
       }
       {
@@ -500,7 +500,7 @@
       char str[] = "hello";                              // сишная строка
       // char str[] = {'h', 'e', 'l', 'l', 'o', 0};      // то же самое
       
-      char str_ptr = *str;                               // array-to-pointer decay
+      char *str_ptr = str;                               // array-to-pointer decay
     }
     ```
   * ### Сравнение и получение длины
@@ -572,7 +572,7 @@
     ```c++
     #include <cstring>
     #include <iostream>
-    #inlude "прошлый_пример.h"
+    #include "прошлый_пример.h"
       
     int main() {
       char* x = "xyz";
@@ -626,3 +626,4 @@
       std::cout << s_ptr << " (2)\n";      // UB: строчка, владеющая той памятью уже не существует
     }
     ```
+ 
