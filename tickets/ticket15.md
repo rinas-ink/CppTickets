@@ -137,13 +137,13 @@ int main() {
 ```c++
 
 struct Foo {
-    std::vector<int> vec(100);
-}
+    std::vector<int> vec{0, 0, 0};
+};
 
 int main() {
     Foo *ptr = new Foo;
     int bar;
-    std::cout << ptr->vec.size() << std::cout;
+    std::cout << ptr->vec.size() << std::endl; // 3
     delete ptr; // To avoid memory leak
     //delete ptr; // Double free - UB; 
     //delete &bar; // UB;
