@@ -2,7 +2,40 @@
 
 * ## Полиморфные классы, виртуальные функции, `override` `final` для методов, отличия от hiding, вызовы виртуальных функций
 
-  Виртуальная функция - наследники могут перезаписать её поведение словом override.
+  Виртуальная функция - функция, объявленная в базовом классе и переопределенная в наследниках. Создается с помощью ключевого слова `virtual`. Наследники могут перезаписать её поведение словом override.
+
+  До использования виртуальных функций столкнулись с такой проблемой: (не смотря на то что bd указывает на derived мы вызываем функцию из base тк колмпилятор решает какую функцию вызвать только на основании информации полученной на момент компиляции - видит, что ссылка на бэйс и вызывает функцию оттуда). Исправляется просто с помощью virtual.
+
+  ```c++
+  #include <iostream>
+  #include <vector>
+  
+  struct Base {
+      int x = 10;
+  
+      /*virtual*/ void print() const {
+          std::cout << "x = " << x << "\n";
+      }
+  };
+  
+  struct Derived : Base {
+      void print() const /*override /* C++11 */ {  // override: добавить virtual, проверить, что в родителе virtual есть. На самом деле virtual добавляется автоматически, если был в родителе.
+          std::cout << "x = " << x << ", y = " << y << "\n";
+      }
+  };
+  
+  int main() {
+      Base b;
+      Derived d;
+      b.print();
+      d.print();
+  
+      Base &db = d;
+      db.print();
+  
+      std::cout << sizeof(Base) << ", " << sizeof(Derived) << "\n";
+  }
+  ```
 
   Класс полиморфный, если у него есть хотя бы 1 виртуалная фнукция.
 
@@ -57,14 +90,21 @@
 
   * #### отличия от hiding
 
-    [Из лекции про hiding](https://www.youtube.com/watch?v=8-7duHce3Bo&list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&index=12) 23:10
+    Отличия: Виртуальные функции нужны, чтобы вызываться из самого вложенного класса, а hiding про перегрузки - ищем наиболее подходящую функцию.
+
+    [Из лекции про hiding](https://youtu.be/8-7duHce3Bo?list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&t=1384)
 
     4 этапа правила поиска нужной функции:
 
     1. Name resolution (поиск по имени) Output: "overload set". (множество перегрузок)
+
     2. Overload resolution. Output: a single overload. Выбираем наиболее подходящую перегрузку
+
     3. Access check. Определяем можно ли трогать.
+
     4. Call, can be virtual or non-virtual. Вызываемся, смотря на виртуальность.
+
+       Мы смотрим на все перегрузки foo, которые есть в структуре и только на них. На родителя мы не смотрим и не находим функции, которые нам подходят. (Если в структуре вообще нет нужной функции - тогда идем в родителя). 
 
     Если хотим перегрузки от родителя, то есть два способа:
 
@@ -127,9 +167,11 @@
     }
     ```
 
-  * #### Вызовы виртуальных функций
+  * #### Вызовы виртуальных функции
 
-
+    > Егор: есть указатель на таблицу виртуальных функций, мы в него пошли - посмотрели. - низкий уровень
+    >
+    > Высокий - посмотрели куда ссылается ссылка или указатель. Вызвали оттуда метод. 
 
 * ### Один из способов реализации: таблица виртуальных функций, в том числе с наследованием
 
@@ -341,6 +383,8 @@
 
 - #### Возможность вызвать чисто виртуальную функцию
 
+  Чисто виртуальную функцию можно использовать в коде от наследников, если она реализована там. 
+
   ```c++
   #include <iostream>
   
@@ -397,40 +441,27 @@
 
 - ## Виртуальный деструктор: когда, зачем, что будет, если не сделать
 
-  [Часть лекции про это](https://www.youtube.com/watch?v=_lUC9fJ2fcM&list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&index=9) 1:19:00
+  [Часть лекции про это](https://youtu.be/_lUC9fJ2fcM?list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&t=4752)
 
   Правило: если есть хотя бы 1 виртуальная функция - скорее всего деструктор тоже должен быть виртуальным.
 
   В наследниках виртуальный деструктор генерируется автоматически.
 
   ```c++
-  #include <iostream>
-  #include <memory>
-  #include <vector>
-  
   struct Widget {
-      virtual int width() const = 0;
-      virtual int height() const = 0;
-  
+      ...
       virtual ~Widget() = default;  // IMPORTANT! Rule: add virtual dtor in polymorphic base.
       // virtual ~Widget() {};
       
   };
   
   struct Button : Widget {
-      std::string label;
-  
-      Button(std::string label_) : label(std::move(label_)) {}
+      ...
       // virtual ~Button() = default; // automatically generated
   
   };
   
-  struct Image : Widget {
-      int w, h;
-  
-      Image(int w_, int h_) : w(w_), h(h_) {}
-  
-  };
+  struct Image : Widget { ... };
   
   int main() {
       {
@@ -461,7 +492,7 @@
 
   Создаем базовый класс noncopyable. И наследуемся от него. Теперь класс некопируемый.
 
-  ([Лекция](https://www.youtube.com/watch?v=GNDBJ3i_JII&list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&index=10) 53:45 )
+  ([Лекция](https://youtu.be/GNDBJ3i_JII?list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&t=3227 ))
 
   ```c++
   struct noncopyable {  // boost::noncopyable
@@ -486,9 +517,9 @@
 
 - ## Вызовы виртуальных функций в конструкторах и деструкторах: обычные, с явным указанием класса через `::`
 
-  Виртуальные функции в коснструкторах и деструкторах вызываются без виртуальности.
+  Виртуальные функции в коснструкторах и деструкторах вызываются без виртуальности. Рассмотрим в примере констурктор от derived. В нем мы вызываем коструктор от Base. Но на этот момент Derived еще не создан - вызываем foo из base. Потом уже из Derived. Аналогично с деструктором. Сначала уничтожили Derived. Идем уничтожать base, и функцию из derived вызвать уже нельзя.
 
-  [Пример из лекции](https://www.youtube.com/watch?v=GNDBJ3i_JII&list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&index=10) 39:35
+  [Пример из лекции](https://youtu.be/GNDBJ3i_JII?list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&t=2371)
 
   ```c++
   #include <iostream>
@@ -517,11 +548,11 @@
       }
   
       Derived() : Base(), value2(100) {
-          foo(); //Base
+          foo(); //Base, Derived
       }
   
       ~Derived() {
-          foo(); //Base
+          foo(); //Derived, Base
       }
   };
   
@@ -536,7 +567,7 @@
 
   Чисто виртуальные:
 
-  Ошибка компиляции, тк функция printTo( ) не реализована. Но можно реализовать.
+  Ошибка компиляции, тк функция printTo( ) не реализована. Но можно реализовать (расскомитеть строчки Base::printTo())
 
   ```c++
   #include <iostream>
@@ -605,7 +636,7 @@
   * ### RTTI - run time type information
 
     > Информация про типы, которая доступна во время выполнения.
-    Полезен для полиморфных классов.
+    > Полезен для полиморфных классов.
 
   * ### оператор `typeid`
 
