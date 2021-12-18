@@ -1,14 +1,14 @@
-## Билет 32 (One Definition Rule и нарушения IFNDR)
+# Билет 32 (One Definition Rule и нарушения IFNDR)
 
-### ODR
+## ODR
 
 ODR (One Definition Rule) - во всей программе (то есть включая все файлы) у любой сущности должно быть ровно одно определение. 
 Определение с cppreference: Only one definition of any variable, function, class type, enumeration type, concept (since C++20) or template is allowed in any one translation unit (some of these may have multiple declarations, but only one definition is allowed).
 
-#### Что с перегрузкой функций
-##### Напоминание про перегрузку функций: 
+### Что с перегрузкой функций
+#### Напоминание про перегрузку функций: 
 Есть несколько функций с одинаковым именем, но с разными типами аргументов. Тогда компилятор может выбрать наиболее подходящую перегрузку.
-##### Что происходит внутри:
+#### Что происходит внутри:
 API (Application Programming Interface) - показывает, какой программный интерфейс у различных translation unit'ов. (Какие типы у аргументов функции, какие типы возвращаются, в каком namespace лежит и тд). Всё API запоминает компилятор и им можно пользоваться. (Подробнее - https://youtu.be/X-6unqJz_uY?list=PL8a-dtqmQc8obAqSKqGkau8qiafPRCxV7&t=1683)
 ```C++
 void foo();
@@ -19,7 +19,7 @@ foo();
 ```C++
 void foo(); -->  \_Z3foov // v - тип аргумента. 
 ```
-Все это к тому, что перегруженные функции различаются компилятором и нарушения ODR не возникает. Пример:
+Все это к тому, что перегруженные функции различаются компилятором и нарушения ODR не возникает. Пример: //
 foo.cpp:
 ```C++
 void foo(int) {
@@ -35,8 +35,8 @@ int main() {
     foo(10);
 }
 
-#### Пример ошибок линковщика
-##### Multiple definition 
+### Пример ошибок линковщика
+#### Multiple definition 
 Функция имеет более одного определения.
 foo.cpp:
 ```C++
@@ -51,18 +51,18 @@ void foo() {
 int main() {
 }
 ```
-##### Undefined reference
+#### Undefined reference
 Функция не имеет опрделения, но при этом где-то используется.
 ```C++
 int main() {
     foo();
 }
 ```
-#### Примеры IFNDR
+### Примеры IFNDR
 IFNDR (Ill-Formed, No Diagnostic Required) - "
-##### Несовпадение объявлений функций
+#### Несовпадение объявлений функций
 
-С аргументами по умолчанию:
+С аргументами по умолчанию: \\
 foo.cpp:
 ```C++
 void foo(int x = 10) {
