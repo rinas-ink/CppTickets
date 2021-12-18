@@ -78,8 +78,45 @@ std::unique_ptr<Foo> f = std::make_unique<Foo>();
   * ### Решения: неработающее с друзьями, работающее с фабричной статической функцией
 * ## Невозможность копирования
 `unique_ptr` нельзя копировать, только мувать.  
-* ## Синтаксис перемещения: в параметры функции, из функции, в/из других переменных (включая поля: `13-211208/02-move-objects/03-move-to-field`), в/из контейнеров
+* ## Синтаксис перемещения: в параметры функции, из функции, в/из других переменных (включая поля: `13-211208/02-move-objects/03-move-to-field`), в/из контейнеров   
+  Дальше вставлен код с лекции. Нужно сравнить передачу по константной ссылке и по значению. init, copy, destruct- дорогие операции. move, copy, destruct of empty- дешёвые операции. Единственный сценарий, когда мы не хотим передавать по значению, если объект очень большой, и мувать + удялять его очень дорого. Но такого лучше не допускать.  
+  В итоге получается, что передавать переменную выгоднее по констентной ссылке. Временный объект по значению. В третьем случае (где у нас функция возвращает строчку по значениб) так же выгоднее передавать по значению.  
+  
+C++
+  #include <string>
+  #include <utility>
+
+  struct PersonCpp03 {
+      std::string name;
+      PersonCpp03(const std::string &name_) : name(name_) {}  // 1 copy
+  };
+
+  struct PersonCpp11 {
+      std::string name;
+      PersonCpp11(std::string name_) : name(std::move(name_)) {}  // 1 initialization name_ + 1 move + 1 destruct of empty
+  };
+
+  std::string create_name() {
+      std::string s = "hello world";
+      return s;  // no std::move needed
+  }
+
+  int main() {
+      {
+          std::string x = "Egor";
+          [[maybe_unused]] PersonCpp03 p1(x);  // x is copied into p1.name: 1 copy
+          [[maybe_unused]] PersonCpp03 p2("Egor");  // temporary is copied: 1 init, 1 copy, 1 destruct
+          [[maybe_unused]] PersonCpp03 p3(create_name());  // temporary is copied: 1 init inside create_name(), 1 copy, 1 destruct
+      }
+      {
+          std::string x = "Egor";
+          [[maybe_unused]] PersonCpp11 p1(x);  // 1 copy + 1 move + 1 destruct of empty
+          [[maybe_unused]] PersonCpp11 p2("Egor");  // 1 init, 1-2 move, 1-2 destruct of empty
+          [[maybe_unused]] PersonCpp11 p3(create_name());  // 1 init inside create_name(), 1-3 move, 1-3 destruct of empty
+      }
+  }
   * ### Когда (не) надо писать `std::move`
+    Не хочется мувать большие объекты лишний раз, если их достаточно просто скопировать (смотри предылущий пример с лекции).
 * ## `move` как оптимизация для копируемых объектов, автоматическая поддержка `move` у пользовательских структур
   * ### moved-from состояние у объектов
 
