@@ -291,6 +291,34 @@ int main() {
 Foo умеет преобразовываться в Bar, но и Bar умеет создаваться от Foo.  
 То есть имеем два способа преобразовать Foo к Bar, между которыми компилятор не может выбрать, поэтому не компилирует
 вовсе.
+#### Можно починить
+Для этого пометим один из методов explicit
+```C++
+struct Bar;
+
+struct Foo {
+    operator Bar();
+};
+
+struct Bar {
+    Bar() {}
+
+    explicit Bar(Foo /*arg*/) {
+        std::cout << "Bar(Foo)";
+    }
+};
+
+Foo::operator Bar() {
+    std::cout << "Foo::operator Bar()";
+    return Bar{};
+}
+
+int main() {
+    Foo f;
+    Bar b = f;
+}
+```
+Теперь неявно может вызваться только `Foo::operator Bar()`, это и произойдёт.
 
 ### Возвращаясь к неявным преобразованиям
 
