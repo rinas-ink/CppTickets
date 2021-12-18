@@ -40,7 +40,8 @@ struct Example{
         class Example {
             int i;
         public:
-            Example(); // конструктор
+            Example(){} // конструктор дефолтный
+            Example(int a){} // тоже конструктор, но от int
         };
         
         int main(){
@@ -57,7 +58,7 @@ struct Example{
     ```
     Деструктор вызывается автоматически компилятором, когда объект выходит из своей области существования.
 * **Семантика копирования, особенности полей-констант/ссылок при копировании и инициализации.**
-Если у нас есть объект и мы его передаем по значению (в функции например) или делаем **=**, то копируются все поля. 
+Если у нас есть объект и мы его передаем по значению (в функции например) или делаем **=**, то копируются все поля. Существует еще copy-constructor и copy assignment operator, которые и управляют копированием. Про них и их реализацию подробнее и красочнее в [примере с лекции](https://github.com/hse-spb-2021-cpp/lectures/blob/master/09-211110/00b-special-operators.cpp). Но стоит сказать, что в примере ниже copy-constructor и copy assignment operator по умолчанию дефолтные.
     ```c++
     struct Foo{
         int x;
@@ -105,24 +106,16 @@ struct Example{
         int var;
     
         bigint(int x) : digits{x % 10, x / 10} {
-            std::cout << this << " bigint(" << x << ")\n";
         }
     
         bigint() : bigint(0)/*, var(10)*/ {  // since C++11
-            var = 10;
-            std::cout << this << " bigint()\n";
-        }
-    
-        bigint(bool) {
-            std::cout << this << " bigint(bool)\n";
-            bigint(0);
-            std::cout << this << " digits.size() == " << digits.size() << "\n";
+            var = 10;                       // тут bigint(0) - делегирующий конструктор
+            // если хотим поменять переменную, то лучше сделать переприсвоение, так как в initilization list изменять не имеем права.
         }
     };
     
     int main() {
-        [[maybe_unused]] bigint b1;
-        [[maybe_unused]] bigint b2(true);
+        [[maybe_unused]] bigint b1; 
     }
 ```
 
@@ -171,15 +164,14 @@ struct Example{
 * **Приватные/публичные поля и методы**
 [Плохой пример](https://github.com/hse-spb-2021-cpp/lectures/blob/master/04-210923/04-api/01a-public.cpp), когда все в public не бывает полезно. Например пользователь может что-то случайно изменить или сломать инвариант. Для этого существует private секция. К полям и методам из private секции имеют доступ только методы структуры, через них мы можем даже изменять приватные поля. 
 Вредные советы: всегда создавать getters и setters. Пример: setters в случае дроби не нужны, и getters тоже сомнительно (?), но их можно оставить. Например надо ставить assert(x != 0), когда меняется знаменатель через  setter. Да и вообще неразумно менять дробь. 
-
+    **геттеры** — это функции, которые возвращают значения закрытых переменных-членов класса;
+    **сеттеры** — это функции, которые позволяют присваивать значения закрытым переменным-членам класса.
 Запомним: 
 Класс должно быть нельзя использовать некорректно! Даже если очень захотеть.
 Пример: нельзя просто так взять и поменять числитель/знаменатель у дроби.
-
+    [Оригинальный пример с лекции](https://github.com/hse-spb-2021-cpp/lectures/blob/master/04-210923/04-api/01b-private.cpp)
 
 ```c++
-    #include <cassert>
-    
     struct ratio {
     private:
         // denom != 0
@@ -187,14 +179,8 @@ struct Example{
         int denom;
     
     public:
-        ratio() : num(0), denom(1) {}
-        ratio(int value) : num(value), denom(1) {}
-        ratio(int num_, int denom_) : num(num_), denom(denom_) {
-            assert(denom != 0);
-        }
-        explicit operator double() const {
-            return num * 1.0 / denom;
-        }
+        
+        //  куча конструкторов
     
         // getter
         int numerator() const {
@@ -215,9 +201,7 @@ struct Example{
     
     int main() {
         ratio r;
-        // r = {0, 0};
-        // r.denom = 0;
-        // r.denominator(0);
+        // r.denominator(0); 
         r = {r.numerator(), 5}; // безумная операция, которая отрывает числитель у дроби и меняет знаменатель.
         // пример плохого применения setter
         std::cout << r.numerator() << "\n";
