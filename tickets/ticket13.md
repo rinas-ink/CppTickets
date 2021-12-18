@@ -51,7 +51,19 @@
         
         [вай +10 минут сна мне](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#%D0%B1%D0%B8%D0%BB%D0%B5%D1%82-03-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0-%D0%BF%D0%BE%D0%B8%D1%81%D0%BA%D0%B0-%D0%B8%D0%BC%D1%91%D0%BD-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85-%D0%B8-%D0%B2%D0%BD%D1%83%D1%82%D1%80%D0%B8-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%BE%D0%B2)
     - Отличие между std:: и ::std::
-      TODO
+      Если вы пишете нормальный код и его не будут исопльзовать через левое ухо, то это одно и тоже. 
+      
+      НО если кто-то сделает стурктуру/namespace с именем std(он обязательно в каком-то namespace, тк в std нельзя ничего вставлять, это UB)
+      То может произойти примерно вот такой кек: 
+      ```c++
+        #include <iostream>
+        int main() {
+          struct std{};
+          std::cout << "fail\n"; // Error: unqualified lookup for 'std' finds the struct
+          ::std::cout << "ok\n"; // OK: ::std finds the namespace std
+        }
+
+      ```
     - ADL (argument-dependent lookup) для операторов и функций
       Видимо мы еще не прошли таааак глубоко [Версия от Влада](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#%D0%B1%D0%B8%D0%BB%D0%B5%D1%82-04-adl) - Там чет сильно больше, чем у нас было(вроде), 
       
@@ -96,6 +108,8 @@
       friend-function's внутри пространства имен, которые объявлены в связанном классе видны для ADL, даже если не видны для других поисков.
       
       [Влад гений](https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#hidden-friend-%D0%BF%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5-%D0%BF%D0%BE%D1%81%D0%BE%D0%B1%D0%B8%D0%B5-%D0%BF%D0%BE-%D0%BF%D0%BE%D0%B8%D1%81%D0%BA%D1%83-%D0%B4%D1%80%D1%83%D0%B7%D0%B5%D0%B9)
+      
+      [Еще в 23 билете про это классно написали, ну и просто инфа про друзей итп есть](https://github.com/khbminus/CppTickets/blob/master/tickets/ticket23.md#%D0%B4%D1%80%D1%83%D0%B7%D1%8C%D1%8F-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8)
 - ###Shadowing переменных в рамках одной функции
 
 (скоммуниздил с [хабра](https://habr.com/ru/company/vk/blog/341584/), use ctrl+f)
