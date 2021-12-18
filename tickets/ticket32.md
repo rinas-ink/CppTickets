@@ -1,4 +1,4 @@
-# Билет 32 (One Definition Rule и нарушения IFNDR)
+## Билет 32. One Definition Rule и нарушения IFNDR
 
 ## ODR
 

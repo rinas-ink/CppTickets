@@ -1,4 +1,4 @@
-## Static initialization order fiasco
+## Билет 33. Static initialization order fiasco
 ### О чём это
 Рассмотрим программу, состоящую из нескольких единиц трансляции: `a.cpp` и `b.cpp`. Пусть в `a.cpp` и `b.cpp` создаются объекты с статическим временем жизни (см. [билет 15](https://github.com/khbminus/CppTickets/blob/master/tickets/ticket15.md#static-storage-duration)), например глобальные переменные. В таком случае порядок инициализации этих переменных зависит от порядка линковки этих единиц трансляции. Это может привести к проблемам.
 <!-- TODO: make references to other tickets uniform --->
