@@ -131,7 +131,6 @@ int main() {
 ```
 `std::reference_wrapper` не владеет, тем на что ссылается и может быть висячим.
 
-
 ###лямбды
 
 Лямбда-выражения - синтаксический сахар для создания функторов. Тип созданного функтора невозможно описать,
@@ -160,7 +159,7 @@ int main() {
 }
 ```
 
-(раскрывается так)[https://cppinsights.io/lnk?code=I2luY2x1ZGUgPGlvc3RyZWFtPgojaW5jbHVkZSA8dmVjdG9yPgojaW5jbHVkZSA8ZnVuY3Rpb25hbD4KCmludCBtYWluKCkgewogICAgYXV0byBsYW1iZGEgPSBbdmFsID0gMF0oaW50KSBtdXRhYmxlIHsgc3RkOjpjb3V0IDw8IHZhbCsrIDw8ICdcbic7IH07CiAgICBzdGQ6OnZlY3RvcjxpbnQ+IHYoMTAwLCAwKTsKICAgIHN0ZDo6Zm9yX2VhY2godi5iZWdpbigpLCB2LmVuZCgpLCBsYW1iZGEpOyAvLyBudW1iZXJzIGZyb20gMCB0byA5OQp9Cg==&insightsOptions=cpp17&std=cpp17&rev=1.0]
+[раскрывается так](https://cppinsights.io/lnk?code=I2luY2x1ZGUgPGlvc3RyZWFtPgojaW5jbHVkZSA8dmVjdG9yPgojaW5jbHVkZSA8ZnVuY3Rpb25hbD4KCmludCBtYWluKCkgewogICAgYXV0byBsYW1iZGEgPSBbdmFsID0gMF0oaW50KSBtdXRhYmxlIHsgc3RkOjpjb3V0IDw8IHZhbCsrIDw8ICdcbic7IH07CiAgICBzdGQ6OnZlY3RvcjxpbnQ+IHYoMTAwLCAwKTsKICAgIHN0ZDo6Zm9yX2VhY2godi5iZWdpbigpLCB2LmVuZCgpLCBsYW1iZGEpOyAvLyBudW1iZXJzIGZyb20gMCB0byA5OQp9Cg==&insightsOptions=cpp17&std=cpp17&rev=1.0)
 
 Поля структуры нельзя захватить по отдельно от всего объекта - приходится захватывать `[this]` или `[*this]`.
 
@@ -183,7 +182,7 @@ int main()
 
 ```
 
-(раскрывается так)[https://cppinsights.io/lnk?code=I2luY2x1ZGUgPGlvc3RyZWFtPgoKc3RydWN0IEZvbyB7CiAgaW50IGE7CiAgYXV0byBjb3B5X2NhcHR1cmUoKSB7CiAgCXJldHVybiBbKnRoaXNdKCl7CiAgICAgIHN0ZDo6Y291dCA8PCBhIDw8IHN0ZDo6ZW5kbDsKICAgIH07CiAgfQp9OwoKaW50IG1haW4oKQp7CiAgYXV0byBsYW1iZGExID0gRm9vezF9LmNvcHlfY2FwdHVyZSgpOwogIGxhbWJkYTEoKTsgLy8gbm8gZGFuZ2xpbmcgcmVmZXJlbmNlCn0=&insightsOptions=cpp17&std=cpp17&rev=1.0]
+[раскрывается так](https://cppinsights.io/lnk?code=I2luY2x1ZGUgPGlvc3RyZWFtPgoKc3RydWN0IEZvbyB7CiAgaW50IGE7CiAgYXV0byBjb3B5X2NhcHR1cmUoKSB7CiAgCXJldHVybiBbKnRoaXNdKCl7CiAgICAgIHN0ZDo6Y291dCA8PCBhIDw8IHN0ZDo6ZW5kbDsKICAgIH07CiAgfQp9OwoKaW50IG1haW4oKQp7CiAgYXV0byBsYW1iZGExID0gRm9vezF9LmNvcHlfY2FwdHVyZSgpOwogIGxhbWJkYTEoKTsgLy8gbm8gZGFuZ2xpbmcgcmVmZXJlbmNlCn0=&insightsOptions=cpp17&std=cpp17&rev=1.0)
 
 
 Довольго популярна идиома передачи в лямбды `[field = std::move(value)]` - 	это, например, единственный способ передать
