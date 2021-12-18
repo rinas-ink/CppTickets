@@ -2962,16 +2962,20 @@ int main() {
 Кроме того определение статического поля должно быть **одно и только в одной единице трансляции**. ODR.
 
 #### Слово `inline`
-Если хочется всё-таки объявить поле внутри класса, то можно добавить ключевое слово `inline`. Тогда объявление вне класса не нужно, а также добавляется классический смысл `inline`, что можно определить в нескольких единицах трансляции, но программист гарантирует, что они будут одинаковы.
+Если хочется всё-таки сразу объявить поле внутри класса, то можно добавить ключевое слово `inline`. Тогда объявление вне класса не нужно. 
 
+С классическим смыслом `inline` ODR-выключателя запутанно. Экспериментально выявил, что нельзя несколько раз объявлять, даже в разных единицах трансляции, т.е. ODR не выключился... Хотя вроде по cppreference должно быть можно, ибо external linkage... Почитайте [cppreference](https://en.cppreference.com/w/cpp/language/inline#:~:text=An%20inline%20function%20or%20variable%20(since%20C%2B%2B17)%20with,It%20has%20the%20same%20address%20in%20every%20translation%20unit).
+<!-- FIXME: --->
 
 ```c++
-struct Foo {
-    static inline int x = 1;
-    static inline int y;
+struct S {
+    int n;                    // defines S::n
+    static int i;             // declares, but doesn't define S::i
+    inline static int x;      // defines S::x
+    inline static int y = 1;  // defines S::y
 };
 
-int Foo::y = 1;  // also fine
+int S::i = 3;                 // defines S::i
 ```
 
 ### Обращение к статическим членам
@@ -3001,16 +3005,17 @@ int main() {
     obj.bar();
 }
 ```
-На статические члены также ожидаемым образом влияют `public/protected/private`. Но объявить статическое поле снаружи тоже можно.
+На статические члены также ожидаемым образом влияют `public/protected/private`. Но объявить статическое поле снаружи тоже можно и доступ к внутренним .
 ```c++
 struct Foo {
 private:
-    static int x;
+    static inline int x = 2;
+    static int y;
 };
 
-int Foo::x = 0;  // ok!
+int Foo::y = x + 2;  // ok!
 
-// int a = Foo::x  // can't access private!
+// int a = Foo::y  // can't access private!
 ``` 
 
 ### Порядок инициализации и удаления статических полей
@@ -3109,6 +3114,10 @@ struct Rectangle {
     }
 };
 ```
+
+### Полезное
+* https://en.cppreference.com/w/cpp/language/inline
+* https://en.cppreference.com/w/cpp/language/definition
 
 ### Неочевидные источники:
 * https://github.com/vladnosiv/hse-spb-conspects-2020/blob/master/C%2B%2B/all-tickets.md#%D0%B1%D0%B8%D0%BB%D0%B5%D1%82-01-%D0%B4%D0%B5%D1%82%D0%B0%D0%BB%D0%B8-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%BE%D0%B2
