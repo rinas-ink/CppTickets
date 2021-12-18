@@ -191,6 +191,84 @@
   * ### Не было: `noexcept`.
   * ### Не было: правил выбора перегрузки точнее "выбирается перегрузка наиболее точная или ambiguous".
 * ## Указатели на функции: синтаксис, использование.
+Стыбжено у 2 курса  
+
+```C++
+#include <iostream>
+
+void apply(void (*operation)(int)) { // cdecl.org
+    std::cout << "calling with 10\n";
+    operation(10);
+}
+
+using ApplyArgument = void(*)(int);
+void apply2(ApplyArgument operation) { // cdecl.org
+    std::cout << "calling with 10 twice\n";
+    operation(10);
+}
+void print(int x) {
+    std::cout << x << "\n";
+}
+
+void print_twice(int x) {
+    std::cout << x << ", " << x << "\n";
+}
+
+int main() {
+    apply(print);
+    apply(print_twice);
+    apply2(print);
+    apply2(print_twice);
+}
+```
+[большая статья про указатели на функции](https://ravesli.com/urok-104-ukazateli-na-funktsii/#toc-0)  
+
+```C++
+#include "iostream"
+void lol(int a) {
+    std::cout << "функция вызвана с параметром " << a << '\n';
+}
+void kek(void(*lol)(int), int a, int b) {
+    for (int i = 0; i < a; i++) lol(b);
+}
+
+int main() {
+    kek(lol, 2, 4);
+    void(*pek)(int) = lol; //создали указатель pek на функцию lol
+//(просто показываю, что так можно)
+    return 0;
+}
+```
+
+В функцию kek передали указатель на функцию возвращающую void и принимающую один параметр int. Так же можно создать константный указатель на функцию void(* const lol)(int).  
+Так же уместен такой синтаксис:  
+```C++
+#include "iostream"
+void lol(int a) {
+    std::cout << "функция вызвана с параметром " << a << '\n';
+}
+using func = void(*)(int);
+void kek(func lol, int a, int b) {
+    for (int i = 0; i < a; i++) lol(b);
+}
+
+int main() {
+    kek(lol, 2, 4);
+    func pek = lol; //создали указатель pek на функцию lol
+//(просто показываю, что так можно)
+    pek(1);
+    return 0;
+}
+```  
+Можно передавать свой компаратор в сортировочку. Или в тестирующей системе tic-tac-toe извращаться(прикольно). Или в другую функцию передавать, чтобы в каком-то конкретном случае она делала именно то, что вы хотите(некоторое обобщение передачи в сортировочку).
+
+
+
+
+
+
+
+
   * ### Не было: конверсии между указателями, что происходит с перегрузками.
 
 Тесно связано с: методы.
