@@ -2622,16 +2622,17 @@ double d1 = fd(); // may be initialized statically or dynamically to 1.0
 ##### Static local
 Статические локальные переменные можно создавать внутри функций, тогда они будут доступны каждый раз, когда вызывается эта функция.
 ```c++
-int foo() {
+int foo(int addition) {
     static int x = 1;
-    x++;
+    x += addition;
+    return x;
 }
 
 int main() {
     std::cout << x << '\n';  // 1
-    foo();
+    foo(1);
     std::cout << x << '\n';  // 2
-    x += 2;
+    foo(2);
     std::cout << x << '\n';  // 4
 }
 ```
