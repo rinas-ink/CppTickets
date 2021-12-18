@@ -22,6 +22,7 @@ jobs:
             cat "$ticket" | sed -nr "1s/^##(.*)/\1/p" >> tickets/all-tickets.md
             echo -e "</summary>\n" >> tickets/all-tickets.md
             cat "$ticket" | sed '1d' >> tickets/all-tickets.md
+            echo >> tickets/all-tickets.md
             echo -e "</details>\n" >> tickets/all-tickets.md
           done
       - name: Concatenate all the tickets into all-musthaves.md
