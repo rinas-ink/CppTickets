@@ -1,26 +1,6 @@
 <details>
 <summary>
- Template Ticket
-</summary>
-
-
-**жирный текст** _курсив_ ~~ошибка~~ ==мнения?== `inline code block` [ссылка на фулл](https://www.markdownguide.org/cheat-sheet/)
-```c++
-int main() {
-    return 0;
-}
-```
-
-### Подзаголовок
-
-LMAO
-Not bottom text, lol
-
-</details>
-
-<details>
-<summary>
- Билет 10 Базовый синтаксис
+ Билет 10. Базовый синтаксис
 </summary>
 
 
@@ -215,6 +195,7 @@ a = b = 5; // b = 5; a = b;
 
 <details>
 <summary>
+ Билет 11. Объявление объектов внутри одного файла
 </summary>
 
 
@@ -504,6 +485,7 @@ int main() {
 
 <details>
 <summary>
+ Билет 12. Объявление переменных
 </summary>
 
 Скраденно подчистую
@@ -627,6 +609,7 @@ int main() {
 
 <details>
 <summary>
+ Билет 13. Подробности именования сущностей
 </summary>
 
 - ###[[maybe_unused]] 
@@ -761,7 +744,7 @@ auto f(float x = 5.f) {                                     // x is a float
 
 <details>
 <summary>
- 4. Функции
+ Билет 4. Функции
 </summary>
 
 * ## Параметры
@@ -1065,7 +1048,7 @@ int main() {
 
 <details>
 <summary>
- Жизнь объектов
+ Билет 15. Жизнь объектов
 </summary>
 
 
@@ -1289,7 +1272,7 @@ int main() {
 
 <details>
 <summary>
- Стандартная библиотека
+ Билет 16. Стандартная библиотека
 </summary>
 
 
@@ -1487,7 +1470,7 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
 
 <details>
 <summary>
- 17. Указатели
+ Билет 17. Указатели
 </summary>
 
 
@@ -2123,7 +2106,7 @@ std::ostream& operator<<(std::ostream& os, const T& obj) {
 
 <details>
 <summary>
- Билет 20 Классы
+ Билет 20. Классы
 </summary>
 
 * **Cинтаксис**
@@ -2414,7 +2397,7 @@ struct Example{
 
 <details>
 <summary>
- 21. Функции-члены (методы)
+ Билет 21. Функции-члены (методы)
 </summary>
 
 
@@ -2742,7 +2725,7 @@ void Foo::foo(int n) {
 
 <details>
 <summary>
- Статические члены класса
+ Билет 22. Статические члены класса
 </summary>
 
 Обычные члены класса относятся к конкретному объекту. Статические члены же относятся ко всему классу. 
@@ -2926,7 +2909,7 @@ struct Rectangle {
 
 <details>
 <summary>
- Билет 23
+ Билет 23. Друзья и перегрузка операторов
 </summary>
 
 Друзья - это те, кто имеют доступ к приватным полям, не являясь членами класса.
@@ -3234,7 +3217,7 @@ int main() {
 
 <details>
 <summary>
- 24. Преобразования
+ Билет 24. Преобразования
 </summary>
 
 
@@ -3773,7 +3756,7 @@ int main() {
 
 <details>
 <summary>
- Функторы и лямбды  
+ Билет 25. Функторы и лямбды  
 </summary>
 
 
@@ -3997,6 +3980,7 @@ int main()
 
 <details>
 <summary>
+ Билет 30. Препроцессор
 </summary>
 
 
@@ -4434,6 +4418,7 @@ void func_10() {
 
 <details>
 <summary>
+ Билет 31. Программы из нескольких файлов
 </summary>
 
 
@@ -4876,6 +4861,7 @@ int main() {
 
 <details>
 <summary>
+ Билет 32. One Definition Rule и нарушения IFNDR
 </summary>
 
 
@@ -5120,7 +5106,7 @@ Static, примененный к сущностям работает как unn
 
 <details>
 <summary>
- Static initialization order fiasco
+ Билет 33. Static initialization order fiasco
 </summary>
 
 ### О чём это
@@ -5417,7 +5403,7 @@ Foo& getFoo() {
 
 <details>
 <summary>
- 42. Полиморфные классы
+ Билет 42. Полиморфные классы
 </summary>
 
 
