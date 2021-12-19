@@ -1,4 +1,5 @@
 ## Билет 40. Базовое наследование.
+
 ### Совместимость по ссылкам и указателям
 
 #### Устройство
@@ -144,6 +145,34 @@ struct Foo{
 
 Строгое правило: мы имеем доступ к методам родителей, если мы уверены, что вызываем от родителя. Поэтому ссылочные типы
 или указатели отправляются домой.
+
+```c++
+void Derived::derived_method(SubDerived &sd) {
+    sd.base_method(sd);
+    sd.derived_method(sd);
+    // sd.subderived_method(sd);
+
+    Base::base_static(sd);
+    Derived::base_static(sd);
+    SubDerived::base_static(sd);
+    Derived::derived_static(sd);
+    SubDerived::derived_static(sd);
+    // SubDerived::subderived_static(sd);
+
+    // WARNING: can only see protected through 'Derived' or 'SubDerived', not 'Base'.
+    [[maybe_unused]] Base &b = sd;
+    // b.base_method(sd);
+
+    // Reason:
+    [[maybe_unused]] OtherDerived od;
+    // od.base_method(sd);
+    // static_cast<Base&>(od).base_method(sd);
+
+    [[maybe_unused]] Derived &d = sd;
+    d.base_method(sd);
+    d.derived_method(sd);
+}
+```
 
 А что друзья? Друг Derived имеет доступ к методам Derived, но не к SubDerived. А что с методами Base? А кто его знает)
 Там открытый issue на гитхабе: зависит от стандарта, компилятора, фазы луны, номера лабы, ...
